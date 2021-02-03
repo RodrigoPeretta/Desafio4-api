@@ -1,8 +1,10 @@
-import { db } from '../models/index.js';
+import { db, gradesModel } from '../models/index.js';
 import { logger } from '../config/logger.js';
 
 const create = async (req, res) => {
   try {
+    await gradesModel.create(res.body);
+
     res.send({ message: 'Grade inserido com sucesso' });
     logger.info(`POST /grade - ${JSON.stringify()}`);
   } catch (error) {
@@ -22,6 +24,9 @@ const findAll = async (req, res) => {
     : {};
 
   try {
+    const result = await gradesModel.find(condition);
+
+    res.send(result);
     logger.info(`GET /grade`);
   } catch (error) {
     res
@@ -35,6 +40,10 @@ const findOne = async (req, res) => {
   const id = req.params.id;
 
   try {
+    const result = gradesModel.findOne(id);
+
+    res.send(result);
+
     logger.info(`GET /grade - ${id}`);
   } catch (error) {
     res.status(500).send({ message: 'Erro ao buscar o Grade id: ' + id });
@@ -52,6 +61,13 @@ const update = async (req, res) => {
   const id = req.params.id;
 
   try {
+    const result = await gradesModel.findOneAndUpdate({
+      _id: id,
+      ...res.body,
+    });
+
+    res.send(result);
+
     logger.info(`PUT /grade - ${id} - ${JSON.stringify(req.body)}`);
   } catch (error) {
     res.status(500).send({ message: 'Erro ao atualizar a Grade id: ' + id });
@@ -63,6 +79,12 @@ const remove = async (req, res) => {
   const id = req.params.id;
 
   try {
+    const result = await gradesModel.findOneAndDelete({
+      _id: id,
+    });
+
+    res.send(result);
+
     logger.info(`DELETE /grade - ${id}`);
   } catch (error) {
     res
@@ -74,6 +96,10 @@ const remove = async (req, res) => {
 
 const removeAll = async (req, res) => {
   try {
+    const result = await gradesModel.deleteMany({});
+
+    res.send(result);
+
     logger.info(`DELETE /grade`);
   } catch (error) {
     res.status(500).send({ message: 'Erro ao excluir todos as Grades' });
